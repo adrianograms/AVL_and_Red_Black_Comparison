@@ -1,5 +1,8 @@
 // C++ program to insert a node in AVL tree
 #include<bits/stdc++.h>
+#include <chrono>
+
+using namespace std::chrono;
 using namespace std;
  
 // An AVL tree node
@@ -165,31 +168,102 @@ void preOrder(Node *root)
         preOrder(root->right);
     }
 }
+
+void deleteTree(Node *node)
+{
+    if(node == NULL)
+        return;
+    if(node->left != NULL)
+		deleteTree(node->left);
+	if(node->right != NULL)
+		deleteTree(node->right);
+	delete &node;
+}
+
+bool search(int value, Node* node)
+{
+	if(node->key == value)
+		return true;
+	else if(node->key > value and node->left != nullptr)
+		return search(value, node->left);
+	else if(node->key < value and node->right != nullptr)
+		return search(value, node->right);
+	else
+		return false;
+}
  
 // Driver Code
 int main()
 {
-    Node *root = NULL;
+
+    Node* tree = nullptr;
+	vector<string> file_names = {"50","100","200","300","500","750","1000","1500","2000","3000",
+		"5000","7500","10000","12500","15000","20000","25000","30000","40000","50000","75000","100000","125000","150000","175000","200000","225000","250000"};
+
+	for(int i=0; i<file_names.size(); i++)
+	{
+		float mean_construction = 0.0;
+		float mean_search = 0.0;
+		for(int j=0; j<5; j++)
+		{
+			string path = "./Construcao/" + file_names[i] + ".txt";
+			string value_string;
+			ifstream file_construction(path);
+			float time = 0.0;
+			while (getline (file_construction, value_string,' ')) {
+				int value = atoi(value_string.c_str());
+
+				auto start = high_resolution_clock::now();
+				insert(tree, value);
+				auto stop = high_resolution_clock::now();
+				auto duration = duration_cast<microseconds>(stop - start);
+				time += duration.count();
+			}
+			mean_construction += time;
+			deleteTree(tree);
+			file_construction.close();
+
+			path = "./Consulta/" + file_names[i] + ".txt";
+			ifstream file_search(path);
+			time = 0.0;
+			auto start = high_resolution_clock::now();
+			while (getline (file_search, value_string,' ')) {
+				int value = atoi(value_string.c_str());
+
+				search(value, tree);
+			}
+			auto stop = high_resolution_clock::now();
+			auto duration = duration_cast<microseconds>(stop - start);
+			mean_search += duration.count();
+			deleteTree(tree);
+			file_search.close();
+		}
+		cout << "----------------------------------------------" << endl;
+		cout << file_names[i] << ".txt" << endl;
+		cout << "Tempo medio de construção: " << mean_construction/5 << endl;
+		cout << "Tempo medio de consulta: " << mean_search/5 << endl;
+	}
+    // Node *root = NULL;
      
-    /* Constructing tree given in
-    the above figure */
-    root = insert(root, 10);
-    root = insert(root, 20);
-    root = insert(root, 30);
-    root = insert(root, 40);
-    root = insert(root, 50);
-    root = insert(root, 25);
+    // /* Constructing tree given in
+    // the above figure */
+    // root = insert(root, 10);
+    // root = insert(root, 20);
+    // root = insert(root, 30);
+    // root = insert(root, 40);
+    // root = insert(root, 50);
+    // root = insert(root, 25);
      
-    /* The constructed AVL Tree would be
-                30
-            / \
-            20 40
-            / \ \
-        10 25 50
-    */
-    cout << "Preorder traversal of the "
-            "constructed AVL tree is \n";
-    preOrder(root);
+    // /* The constructed AVL Tree would be
+    //             30
+    //         / \
+    //         20 40
+    //         / \ \
+    //     10 25 50
+    // */
+    // cout << "Preorder traversal of the "
+    //         "constructed AVL tree is \n";
+    // preOrder(root);
      
     return 0;
 }

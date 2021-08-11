@@ -323,45 +323,64 @@ void RBTree::levelOrder() { levelOrderHelper(root); }
 int main()
 {
 	RBTree tree;
-	// vector<string> file_names = {"50","100","200","300","500","750","1000","1500","2000","3000",
-	// 	"5000","7500","10000","12500","15000","20000","25000","30000","40000","50000","75000","100000","125000","150000","175000","200000","225000","250000"};
+	vector<string> file_names = {"50","100","200","300","500","750","1000","1500","2000","3000",
+		"5000","7500","10000","12500","15000","20000","25000","30000","40000","50000","75000","100000","125000","150000","175000","200000","225000","250000"};
 
-	// for(int i=0; i<file_names.size(); i++)
-	// {
-	// 	float mean = 0.0;
-	// 	for(int j=0; j<1; j++)
-	// 	{
-	// 		string path = "./Construcao/" + file_names[i] + ".txt";
-	// 		cout << path << endl;
-	// 		string value_string;
-	// 		ifstream file(path);
-	// 		float time = 0.0;
-	// 		while (getline (file, value_string,' ')) {
-	// 			int value = atoi(value_string.c_str());
+	for(int i=0; i<file_names.size(); i++)
+	{
+		float mean_construction = 0.0;
+		float mean_search = 0.0;
+		for(int j=0; j<5; j++)
+		{
+			string path = "./Construcao/" + file_names[i] + ".txt";
+			string value_string;
+			ifstream file_construction(path);
+			float time = 0.0;
+			while (getline (file_construction, value_string,' ')) {
+				int value = atoi(value_string.c_str());
 
-	// 			auto start = high_resolution_clock::now();
-	// 			tree.insert(value);
-	// 			auto stop = high_resolution_clock::now();
-	// 			auto duration = duration_cast<microseconds>(stop - start);
-	// 			time += duration.count();
-	// 		}
-	// 		cout << time << endl;
-	// 		tree.deleteTree();
-	// 		file.close();
-	// 	}
-	// }
+				auto start = high_resolution_clock::now();
+				tree.insert(value);
+				auto stop = high_resolution_clock::now();
+				auto duration = duration_cast<microseconds>(stop - start);
+				time += duration.count();
+			}
+			mean_construction += time;
+			tree.deleteTree();
+			file_construction.close();
+
+			path = "./Consulta/" + file_names[i] + ".txt";
+			ifstream file_search(path);
+			time = 0.0;
+			auto start = high_resolution_clock::now();
+			while (getline (file_search, value_string,' ')) {
+				int value = atoi(value_string.c_str());
+
+				tree.search(value);
+			}
+			auto stop = high_resolution_clock::now();
+			auto duration = duration_cast<microseconds>(stop - start);
+			mean_search += duration.count();
+			tree.deleteTree();
+			file_search.close();
+		}
+		cout << "----------------------------------------------" << endl;
+		cout << file_names[i] << ".txt" << endl;
+		cout << "Tempo medio de construção: " << mean_construction/5 << endl;
+		cout << "Tempo medio de consulta: " << mean_search/5 << endl;
+	}
 
     // auto start = high_resolution_clock::now();
 
-	tree.insert(7);
-	tree.insert(6);
-	tree.insert(5);
-	tree.insert(4);
-	tree.insert(3);
-	tree.insert(2);
-	tree.insert(1);
+	// tree.insert(7);
+	// tree.insert(6);
+	// tree.insert(5);
+	// tree.insert(4);
+	// tree.insert(3);
+	// tree.insert(2);
+	// tree.insert(1);
 
-	cout << tree.search(1);
+	// cout << tree.search(1);
 
 	// cout << "Inoder Traversal of Created Tree\n";
 	// tree.inorder();
