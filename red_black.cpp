@@ -262,6 +262,16 @@ void RBTree::insert(const int &data)
 	fixViolation(root, pt);
 }
 
+// vector <string> split(string text, char separator = ' '){
+//     string str;
+//     stringstream ss(text);
+//     vector <string> result;
+//     while(std::getline(str, ss, separator)){
+//         result.push_back(str);
+//     }
+//     return result;
+// }
+
 // Function to do inorder and level order traversals
 void RBTree::inorder()	 { inorderHelper(root);}
 void RBTree::levelOrder() { levelOrderHelper(root); }
@@ -269,29 +279,38 @@ void RBTree::levelOrder() { levelOrderHelper(root); }
 // Driver Code
 int main()
 {
-	RBTree tree;
+	// RBTree tree;
 
-    auto start = high_resolution_clock::now();
+    // auto start = high_resolution_clock::now();
 
-	tree.insert(7);
-	tree.insert(6);
-	tree.insert(5);
-	tree.insert(4);
-	tree.insert(3);
-	tree.insert(2);
-	tree.insert(1);
+	// tree.insert(7);
+	// tree.insert(6);
+	// tree.insert(5);
+	// tree.insert(4);
+	// tree.insert(3);
+	// tree.insert(2);
+	// tree.insert(1);
 
-	cout << "Inoder Traversal of Created Tree\n";
-	tree.inorder();
+	// cout << "Inoder Traversal of Created Tree\n";
+	// tree.inorder();
 
-	cout << "\n\nLevel Order Traversal of Created Tree\n";
-	tree.levelOrder();
+	// cout << "\n\nLevel Order Traversal of Created Tree\n";
+	// tree.levelOrder();
 
-    auto stop = high_resolution_clock::now();
+    // auto stop = high_resolution_clock::now();
 
-    auto duration = duration_cast<microseconds>(stop - start);
+    // auto duration = duration_cast<microseconds>(stop - start);
 
-    cout << duration.count() << endl;
+    // cout << duration.count() << endl;
+    string myText;
+
+    ifstream MyReadFile("./Construcao/25000.txt");
+    while (getline (MyReadFile, myText,' ')) {
+        // Output the text from the file
+        cout << myText << endl;
+    }
+
+    // auto vetor = split(myText);
 
 	return 0;
 }
