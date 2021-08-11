@@ -36,10 +36,12 @@ protected:
 	void rotateRight(Node *&, Node *&);
 	void fixViolation(Node *&, Node *&);
 	void deleteTree(Node *&);
+	bool search(int, Node*&);
 public:
 	// Constructor
 	RBTree() { root = NULL; }
 	void insert(const int &n);
+	bool search(int n);
 	void inorder();
 	void levelOrder();
 	void deleteTree();
@@ -286,6 +288,33 @@ void RBTree::insert(const int &data)
 	fixViolation(root, pt);
 }
 
+bool RBTree::search(int value, Node*& node)
+{
+	if(node->data == value)
+		return true;
+	else if(node->data > value and node->left != nullptr)
+		return search(value, node->left);
+	else if(node->data < value and node->right != nullptr)
+		return search(value, node->right);
+	else
+		return false;
+}
+
+bool RBTree::search(int value)
+{
+	if(root == nullptr)
+		return false;
+	else if(root->data == value)
+		return true;
+	else if(root->data > value and root->left != nullptr)
+		return search(value, root->left);
+	else if(root->data < value and root->right != nullptr)
+		return search(value, root->right);
+	else
+		return false;
+
+}
+
 // Function to do inorder and level order traversals
 void RBTree::inorder()	 { inorderHelper(root);}
 void RBTree::levelOrder() { levelOrderHelper(root); }
@@ -294,6 +323,33 @@ void RBTree::levelOrder() { levelOrderHelper(root); }
 int main()
 {
 	RBTree tree;
+	// vector<string> file_names = {"50","100","200","300","500","750","1000","1500","2000","3000",
+	// 	"5000","7500","10000","12500","15000","20000","25000","30000","40000","50000","75000","100000","125000","150000","175000","200000","225000","250000"};
+
+	// for(int i=0; i<file_names.size(); i++)
+	// {
+	// 	float mean = 0.0;
+	// 	for(int j=0; j<1; j++)
+	// 	{
+	// 		string path = "./Construcao/" + file_names[i] + ".txt";
+	// 		cout << path << endl;
+	// 		string value_string;
+	// 		ifstream file(path);
+	// 		float time = 0.0;
+	// 		while (getline (file, value_string,' ')) {
+	// 			int value = atoi(value_string.c_str());
+
+	// 			auto start = high_resolution_clock::now();
+	// 			tree.insert(value);
+	// 			auto stop = high_resolution_clock::now();
+	// 			auto duration = duration_cast<microseconds>(stop - start);
+	// 			time += duration.count();
+	// 		}
+	// 		cout << time << endl;
+	// 		tree.deleteTree();
+	// 		file.close();
+	// 	}
+	// }
 
     // auto start = high_resolution_clock::now();
 
@@ -305,12 +361,14 @@ int main()
 	tree.insert(2);
 	tree.insert(1);
 
-	cout << "Inoder Traversal of Created Tree\n";
-	tree.inorder();
+	cout << tree.search(1);
 
-	tree.deleteTree();
+	// cout << "Inoder Traversal of Created Tree\n";
+	// tree.inorder();
 
-	tree.inorder();
+	// tree.deleteTree();
+
+	// tree.inorder();
 
 	// cout << "\n\nLevel Order Traversal of Created Tree\n";
 	// tree.levelOrder();
