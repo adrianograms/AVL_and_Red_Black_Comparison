@@ -83,7 +83,7 @@ struct AVLNode* lrRotate(struct AVLNode* A,struct AVLNode* B){
 struct AVLNode* createNode(int data){
 	
 	struct AVLNode* temp;
-	temp=(struct AVLNode*)malloc(sizeof(struct AVLNode));
+	temp= new Node();
 	temp->left=NULL;
 	temp->right=NULL;
 	temp->info=data;
@@ -142,20 +142,18 @@ void inOrder(struct AVLNode* r){
      }
 }
 
-void deleteTree(Node *node)
+void deleteTree(Node *&node)
 {
     if(node == NULL)
         return;
-    if(node->left != NULL)
-		deleteTree(node->left);
-	if(node->right != NULL)
-		deleteTree(node->right);
-	delete &node;
+	deleteTree(node->left);
+	deleteTree(node->right);
+	delete node;
 }
 
-bool search(int value, Node* node)
+bool search(int value, Node*& node)
 {
-    if(node == nullptr)
+    if(node == NULL)
         return false;
 	if(node->info == value)
 		return true;
@@ -179,6 +177,7 @@ int main(){
 		float mean_search = 0.0;
 		for(int j=0; j<5; j++)
 		{
+            tree = NULL;
 			string path = "./Construcao/" + file_names[i] + ".txt";
 			string value_string;
 			ifstream file_construction(path);
@@ -187,14 +186,12 @@ int main(){
 			while (getline (file_construction, value_string,' ')) {
 				int value = atoi(value_string.c_str());
 
-				insert(tree, value);
+				tree = insert(tree, value);
 				
 			}
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - start);
-            time += duration.count();
-			mean_construction += time;
-			deleteTree(tree);
+            mean_construction += duration.count();
 			file_construction.close();
 
 			path = "./Consulta/" + file_names[i] + ".txt";
@@ -204,7 +201,7 @@ int main(){
 			while (getline (file_search, value_string,' ')) {
 				int value = atoi(value_string.c_str());
 
-				search(value, tree);
+				bool result = search(value, tree);
 			}
 			stop = high_resolution_clock::now();
 			duration = duration_cast<microseconds>(stop - start);

@@ -10,7 +10,7 @@ typedef struct RBNode{
 	struct RBNode* right;
 	struct RBNode* parent;
 	int info;
-	char color;
+	bool color; //True Red, False Black
 }Node;
 
 struct RBNode* createNode(int data){
@@ -20,7 +20,7 @@ struct RBNode* createNode(int data){
 	temp->right=NULL;
 	temp->parent=NULL;
 	temp->info=data;
-	temp->color='R';
+	temp->color=true;
 }
 
 void swap_col(struct RBNode* g,struct RBNode* p){
@@ -109,10 +109,10 @@ struct RBNode* undoViolation(struct RBNode* root,struct RBNode* curr){
 	struct RBNode* uncle=NULL;
 	
 	if(!(par)){
-		curr->color='B';
+		curr->color=false;
 		return root;
 	}
-	else if(par->color=='B'){
+	else if(!par->color){
 		return root;
 	}
 	else{
@@ -121,7 +121,7 @@ struct RBNode* undoViolation(struct RBNode* root,struct RBNode* curr){
 			
 			uncle=g_parent->left;
 			
-			if(!(uncle) || uncle->color=='B'){
+			if(!(uncle) || !uncle->color){
 				
 				if(curr==par->right){
 					root=leftRotate(root,g_parent);
@@ -137,9 +137,9 @@ struct RBNode* undoViolation(struct RBNode* root,struct RBNode* curr){
 				
 			}
 			else{
-				uncle->color='B';
-				par->color='B';
-				g_parent->color='R';
+				uncle->color=false;
+				par->color=false;
+				g_parent->color=true;
 				curr=g_parent;
 				root=undoViolation(root,curr);
 				return root;
@@ -148,7 +148,7 @@ struct RBNode* undoViolation(struct RBNode* root,struct RBNode* curr){
 		else{
 			uncle=g_parent->right;
 			
-			if(!(uncle)||uncle->color=='B'){
+			if(!(uncle)|| !uncle->color){
 				
 				if(curr==par->left){
 					root=rightRotate(root,g_parent);
@@ -163,9 +163,9 @@ struct RBNode* undoViolation(struct RBNode* root,struct RBNode* curr){
 				}
 			}
 			else{
-				uncle->color='B';
-				par->color='B';
-				g_parent->color='R';
+				uncle->color=false;
+				par->color=false;
+				g_parent->color=true;
 				curr=g_parent;
 				root=undoViolation(root,curr);
 				return root;
@@ -216,9 +216,24 @@ bool search(int value, Node* node)
 		return false;
 }
 
+int depth(Node *node, int depth_value)
+{
+    if(node == nullptr)
+        return depth_value;
+    else
+    {
+        int value_left = depth(node->left, depth_value+1);
+        int value_right = depth(node->right, depth_value+1);
+        if(value_left > value_right)
+            return value_left;
+        else
+            return value_right;
+    }
+}
+
 int main(){
 	
-	Node* tree = nullptr;
+	Node* tree = NULL;
 	vector<string> file_names = {"50","100","200","300","500","750","1000","1500","2000","3000",
 		"5000","7500","10000","12500","15000","20000","25000","30000","40000","50000","75000","100000","125000","150000","175000","200000","225000","250000"};
 
@@ -236,14 +251,12 @@ int main(){
 			while (getline (file_construction, value_string,' ')) {
 				int value = atoi(value_string.c_str());
 
-				insertion(tree, value);
+				tree = insertion(tree, value);
 				
 			}
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - start);
-            time += duration.count();
-			mean_construction += time;
-			deleteTree(tree);
+			mean_construction += duration.count();
 			file_construction.close();
 
 			path = "./Consulta/" + file_names[i] + ".txt";
@@ -258,7 +271,7 @@ int main(){
 			stop = high_resolution_clock::now();
 			duration = duration_cast<microseconds>(stop - start);
 			mean_search += duration.count();
-			deleteTree(tree);
+			//deleteTree(tree);
 			file_search.close();
 		}
 		cout << "----------------------------------------------" << endl;
