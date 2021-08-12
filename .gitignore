@@ -36,3 +36,5 @@
 
 *.rar
 *.stackdump
+
+/.vscode

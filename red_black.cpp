@@ -10,6 +10,8 @@ using namespace std::chrono;
 using namespace std;
 
 enum Color {RED, BLACK};
+int count_construction = 0;
+int count_search = 0;
 
 struct Node
 {
@@ -69,12 +71,14 @@ Node* BSTInsert(Node* root, Node *pt)
 
 	/* Otherwise, recur down the tree */
 	if (pt->data < root->data)
-	{
+	{ 
+		count_construction++;
 		root->left = BSTInsert(root->left, pt);
 		root->left->parent = root;
 	}
 	else if (pt->data > root->data)
 	{
+		count_construction +=2;
 		root->right = BSTInsert(root->right, pt);
 		root->right->parent = root;
 	}
@@ -290,13 +294,16 @@ void RBTree::insert(const int &data)
 
 bool RBTree::search(int value, Node*& node)
 {
-	if(node->data == value)
+	if(node->data == value){
+		count_search++;
 		return true;
-	else if(node->data > value and node->left != nullptr)
+	}else if(node->data > value and node->left != nullptr) {
+		count_search +=2;
 		return search(value, node->left);
-	else if(node->data < value and node->right != nullptr)
+	}else if(node->data < value and node->right != nullptr){
+		count_search += 3;
 		return search(value, node->right);
-	else
+	}else
 		return false;
 }
 
@@ -304,13 +311,16 @@ bool RBTree::search(int value)
 {
 	if(root == nullptr)
 		return false;
-	else if(root->data == value)
+	else if(root->data == value) {
+		count_search++;
 		return true;
-	else if(root->data > value and root->left != nullptr)
+	}else if(root->data > value and root->left != nullptr){
+		count_search +=2;
 		return search(value, root->left);
-	else if(root->data < value and root->right != nullptr)
+	}else if(root->data < value and root->right != nullptr){
+		count_search +=3;
 		return search(value, root->right);
-	else
+	}else
 		return false;
 
 }
@@ -322,7 +332,7 @@ void RBTree::levelOrder() { levelOrderHelper(root); }
 // Driver Code
 int main()
 {
-	RBTree tree;
+	RBTree *tree = new RBTree();
 	vector<string> file_names = {"50","100","200","300","500","750","1000","1500","2000","3000",
 		"5000","7500","10000","12500","15000","20000","25000","30000","40000","50000","75000","100000","125000","150000","175000","200000","225000","250000"};
 
@@ -332,6 +342,9 @@ int main()
 		float mean_search = 0.0;
 		for(int j=0; j<5; j++)
 		{
+			count_search = 0;
+			count_construction = 0;
+			tree = new RBTree();
 			string path = "./Construcao/" + file_names[i] + ".txt";
 			string value_string;
 			ifstream file_construction(path);
@@ -340,13 +353,12 @@ int main()
 				int value = atoi(value_string.c_str());
 
 				auto start = high_resolution_clock::now();
-				tree.insert(value);
+				tree->insert(value);
 				auto stop = high_resolution_clock::now();
 				auto duration = duration_cast<microseconds>(stop - start);
 				time += duration.count();
 			}
 			mean_construction += time;
-			tree.deleteTree();
 			file_construction.close();
 
 			path = "./Consulta/" + file_names[i] + ".txt";
@@ -356,18 +368,20 @@ int main()
 			while (getline (file_search, value_string,' ')) {
 				int value = atoi(value_string.c_str());
 
-				tree.search(value);
+				tree->search(value);
 			}
 			auto stop = high_resolution_clock::now();
 			auto duration = duration_cast<microseconds>(stop - start);
 			mean_search += duration.count();
-			tree.deleteTree();
+			tree->deleteTree();
 			file_search.close();
 		}
 		cout << "----------------------------------------------" << endl;
 		cout << file_names[i] << ".txt" << endl;
 		cout << "Tempo medio de construção: " << mean_construction/5 << endl;
+		cout << "Comparações na construção: " << count_construction << endl;
 		cout << "Tempo medio de consulta: " << mean_search/5 << endl;
+		cout << "Comparações na consulta: " << count_search << endl;
 	}
 
     // auto start = high_resolution_clock::now();

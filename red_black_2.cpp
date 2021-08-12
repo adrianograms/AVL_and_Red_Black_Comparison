@@ -15,7 +15,7 @@ typedef struct RBNode{
 
 struct RBNode* createNode(int data){
 	
-	struct RBNode* temp=(struct RBNode*)malloc(sizeof(struct RBNode));
+	struct RBNode* temp= new Node();
 	temp->left=NULL;
 	temp->right=NULL;
 	temp->parent=NULL;
@@ -25,7 +25,7 @@ struct RBNode* createNode(int data){
 
 void swap_col(struct RBNode* g,struct RBNode* p){
 	
-	char c=g->color;
+	bool c=g->color;
 	g->color=p->color;
 	p->color=c;
 }
@@ -193,12 +193,10 @@ void printTree(struct RBNode* root){
 
 void deleteTree(Node *node)
 {
-    if(node == NULL)
+	if(node == NULL)
         return;
-    if(node->left != NULL)
-		deleteTree(node->left);
-	if(node->right != NULL)
-		deleteTree(node->right);
+	deleteTree(node->left);
+	deleteTree(node->right);
 	delete node;
 }
 
@@ -243,6 +241,7 @@ int main(){
 		float mean_search = 0.0;
 		for(int j=0; j<5; j++)
 		{
+			tree = NULL;
 			string path = "./Construcao/" + file_names[i] + ".txt";
 			string value_string;
 			ifstream file_construction(path);
@@ -251,8 +250,7 @@ int main(){
 			while (getline (file_construction, value_string,' ')) {
 				int value = atoi(value_string.c_str());
 
-				tree = insertion(tree, value);
-				
+				tree = insertion(tree, value);				
 			}
             auto stop = high_resolution_clock::now();
             auto duration = duration_cast<microseconds>(stop - start);
@@ -271,8 +269,8 @@ int main(){
 			stop = high_resolution_clock::now();
 			duration = duration_cast<microseconds>(stop - start);
 			mean_search += duration.count();
-			//deleteTree(tree);
 			file_search.close();
+			deleteTree(tree);
 		}
 		cout << "----------------------------------------------" << endl;
 		cout << file_names[i] << ".txt" << endl;

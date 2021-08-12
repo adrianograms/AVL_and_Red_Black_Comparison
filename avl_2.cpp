@@ -200,8 +200,7 @@ int main(){
 			start = high_resolution_clock::now();
 			while (getline (file_search, value_string,' ')) {
 				int value = atoi(value_string.c_str());
-
-				bool result = search(value, tree);
+				
 			}
 			stop = high_resolution_clock::now();
 			duration = duration_cast<microseconds>(stop - start);

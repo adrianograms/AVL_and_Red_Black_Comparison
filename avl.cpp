@@ -4,6 +4,9 @@
 
 using namespace std::chrono;
 using namespace std;
+
+int count_construction = 0;
+int count_search = 0;
  
 // An AVL tree node
 class Node
@@ -110,11 +113,13 @@ Node* insert(Node* node, int key)
     if (node == NULL)
         return(newNode(key));
  
-    if (key < node->key)
+    if (key < node->key){
+        count_construction++;
         node->left = insert(node->left, key);
-    else if (key > node->key)
+    }else if (key > node->key){
+        count_construction +=2;
         node->right = insert(node->right, key);
-    else // Equal keys are not allowed in BST
+    }else // Equal keys are not allowed in BST
         return node;
  
     /* 2. Update height of this ancestor node */
@@ -173,22 +178,23 @@ void deleteTree(Node *node)
 {
     if(node == NULL)
         return;
-    if(node->left != NULL)
-		deleteTree(node->left);
-	if(node->right != NULL)
-		deleteTree(node->right);
-	delete &node;
+	deleteTree(node->left);
+	deleteTree(node->right);
+	delete node;
 }
 
 bool search(int value, Node* node)
 {
-	if(node->key == value)
+	if(node->key == value){
+        count_search++;
 		return true;
-	else if(node->key > value and node->left != nullptr)
+	}else if(node->key > value and node->left != nullptr) {
+        count_search += 2;
 		return search(value, node->left);
-	else if(node->key < value and node->right != nullptr)
+    }else if(node->key < value and node->right != nullptr){
+        count_search += 3;
 		return search(value, node->right);
-	else
+    }else
 		return false;
 }
  
@@ -196,7 +202,7 @@ bool search(int value, Node* node)
 int main()
 {
 
-    Node* tree = nullptr;
+    Node* tree = NULL;
 	vector<string> file_names = {"50","100","200","300","500","750","1000","1500","2000","3000",
 		"5000","7500","10000","12500","15000","20000","25000","30000","40000","50000","75000","100000","125000","150000","175000","200000","225000","250000"};
 
@@ -206,34 +212,33 @@ int main()
 		float mean_search = 0.0;
 		for(int j=0; j<5; j++)
 		{
+            count_construction = 0;
+            count_search = 0;
+            tree = NULL;
 			string path = "./Construcao/" + file_names[i] + ".txt";
 			string value_string;
 			ifstream file_construction(path);
-			float time = 0.0;
+            auto start = high_resolution_clock::now();
 			while (getline (file_construction, value_string,' ')) {
 				int value = atoi(value_string.c_str());
 
-				auto start = high_resolution_clock::now();
-				insert(tree, value);
-				auto stop = high_resolution_clock::now();
-				auto duration = duration_cast<microseconds>(stop - start);
-				time += duration.count();
+				tree = insert(tree, value);
 			}
-			mean_construction += time;
-			deleteTree(tree);
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+            mean_construction += duration.count();
 			file_construction.close();
 
 			path = "./Consulta/" + file_names[i] + ".txt";
 			ifstream file_search(path);
-			time = 0.0;
-			auto start = high_resolution_clock::now();
+			start = high_resolution_clock::now();
 			while (getline (file_search, value_string,' ')) {
 				int value = atoi(value_string.c_str());
 
-				search(value, tree);
+                search(value, tree);
 			}
-			auto stop = high_resolution_clock::now();
-			auto duration = duration_cast<microseconds>(stop - start);
+			stop = high_resolution_clock::now();
+			duration = duration_cast<microseconds>(stop - start);
 			mean_search += duration.count();
 			deleteTree(tree);
 			file_search.close();
@@ -241,7 +246,9 @@ int main()
 		cout << "----------------------------------------------" << endl;
 		cout << file_names[i] << ".txt" << endl;
 		cout << "Tempo medio de construção: " << mean_construction/5 << endl;
+		cout << "Comparações na construção: " << count_construction << endl;
 		cout << "Tempo medio de consulta: " << mean_search/5 << endl;
+		cout << "Comparações na consulta: " << count_search << endl;
 	}
     // Node *root = NULL;
      
