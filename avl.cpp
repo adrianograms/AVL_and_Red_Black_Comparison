@@ -197,7 +197,22 @@ bool search(int value, Node* node)
     }else
 		return false;
 }
- 
+
+int fdepth(int value, Node* node)
+{
+    int value_left, value_right;
+	value_left = value_right = value;
+	value++;
+	if(node->left != NULL)
+		value_left = fdepth(value, node->left);
+	if(node->right !=NULL)
+		value_right = fdepth(value, node->right);
+
+	if(value_right > value_left)
+		return value_right;
+	else
+		return value_left;
+}
 // Driver Code
 int main()
 {
@@ -206,14 +221,20 @@ int main()
 	vector<string> file_names = {"50","100","200","300","500","750","1000","1500","2000","3000",
 		"5000","7500","10000","12500","15000","20000","25000","30000","40000","50000","75000","100000","125000","150000","175000","200000","225000","250000"};
 
+    ofstream filecsv("avl.csv");
+
+	filecsv << "Arquivo, Tempo de contrucao, Numero de comparacoes (construcao), Tempo de busca, Numero de operacoes (busca), Profundidade\n";
+
 	for(int i=0; i<file_names.size(); i++)
 	{
 		float mean_construction = 0.0;
 		float mean_search = 0.0;
+        int depth = 0;
 		for(int j=0; j<5; j++)
 		{
             count_construction = 0;
             count_search = 0;
+            depth = 0;
             tree = NULL;
 			string path = "./Construcao/" + file_names[i] + ".txt";
 			string value_string;
@@ -240,6 +261,7 @@ int main()
 			stop = high_resolution_clock::now();
 			duration = duration_cast<microseconds>(stop - start);
 			mean_search += duration.count();
+            depth = fdepth(1, tree);
 			deleteTree(tree);
 			file_search.close();
 		}
@@ -249,28 +271,13 @@ int main()
 		cout << "Comparações na construção: " << count_construction << endl;
 		cout << "Tempo medio de consulta: " << mean_search/5 << endl;
 		cout << "Comparações na consulta: " << count_search << endl;
+        cout << "Profundidade: " << depth << endl;
+
+        filecsv  << file_names[i] << "," << mean_construction/5 << "," 
+			<< count_construction << "," << mean_search/5 << "," << count_search 
+			<< "," << depth << "\n";
 	}
-    // Node *root = NULL;
-     
-    // /* Constructing tree given in
-    // the above figure */
-    // root = insert(root, 10);
-    // root = insert(root, 20);
-    // root = insert(root, 30);
-    // root = insert(root, 40);
-    // root = insert(root, 50);
-    // root = insert(root, 25);
-     
-    // /* The constructed AVL Tree would be
-    //             30
-    //         / \
-    //         20 40
-    //         / \ \
-    //     10 25 50
-    // */
-    // cout << "Preorder traversal of the "
-    //         "constructed AVL tree is \n";
-    // preOrder(root);
+    filecsv.close();
      
     return 0;
 }

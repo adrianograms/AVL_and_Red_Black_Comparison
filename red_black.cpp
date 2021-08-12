@@ -39,6 +39,7 @@ protected:
 	void fixViolation(Node *&, Node *&);
 	void deleteTree(Node *&);
 	bool search(int, Node*&);
+	int depth(int, Node *&);
 public:
 	// Constructor
 	RBTree() { root = NULL; }
@@ -47,6 +48,7 @@ public:
 	void inorder();
 	void levelOrder();
 	void deleteTree();
+	int depth();
 };
 
 // A recursive function to do inorder traversal
@@ -325,6 +327,40 @@ bool RBTree::search(int value)
 
 }
 
+int RBTree::depth(int value, Node*& node)
+{
+	int value_left, value_right;
+	value_left = value_right = value;
+	value++;
+	if(node->left != NULL)
+		value_left = depth(value, node->left);
+	if(node->right !=NULL)
+		value_right = depth(value, node->right);
+
+	if(value_right > value_left)
+		return value_right;
+	else
+		return value_left;
+}
+
+int RBTree::depth()
+{
+	int value, value_left, value_right;
+	value = value_left = value_left = 0;
+	value++;
+	if(root == nullptr)
+		return 0;
+	if(root->left != nullptr)
+		value_left = depth(value, root->left);
+	if(root->right !=nullptr)
+		value_right = depth(value, root->right);
+
+	if(value_right > value_left)
+		return value_right;
+	else
+		return value_left;
+}
+
 // Function to do inorder and level order traversals
 void RBTree::inorder()	 { inorderHelper(root);}
 void RBTree::levelOrder() { levelOrderHelper(root); }
@@ -336,14 +372,20 @@ int main()
 	vector<string> file_names = {"50","100","200","300","500","750","1000","1500","2000","3000",
 		"5000","7500","10000","12500","15000","20000","25000","30000","40000","50000","75000","100000","125000","150000","175000","200000","225000","250000"};
 
+	ofstream filecsv("red_black.csv");
+
+	filecsv << "Arquivo, Tempo de contrucao, Numero de comparacoes (construcao), Tempo de busca, Numero de operacoes (busca), Profundidade\n";
+
 	for(int i=0; i<file_names.size(); i++)
 	{
 		float mean_construction = 0.0;
 		float mean_search = 0.0;
+		int depth = 0;
 		for(int j=0; j<5; j++)
 		{
 			count_search = 0;
 			count_construction = 0;
+			depth = 0;
 			tree = new RBTree();
 			string path = "./Construcao/" + file_names[i] + ".txt";
 			string value_string;
@@ -368,58 +410,28 @@ int main()
 			while (getline (file_search, value_string,' ')) {
 				int value = atoi(value_string.c_str());
 
-				tree->search(value);
+				tree->search(-1);
 			}
 			auto stop = high_resolution_clock::now();
 			auto duration = duration_cast<microseconds>(stop - start);
 			mean_search += duration.count();
+			depth = tree->depth();
 			tree->deleteTree();
 			file_search.close();
 		}
-		cout << "----------------------------------------------" << endl;
-		cout << file_names[i] << ".txt" << endl;
-		cout << "Tempo medio de construção: " << mean_construction/5 << endl;
-		cout << "Comparações na construção: " << count_construction << endl;
-		cout << "Tempo medio de consulta: " << mean_search/5 << endl;
-		cout << "Comparações na consulta: " << count_search << endl;
+		std::cout << "----------------------------------------------" << endl;
+		std::cout << file_names[i] << ".txt" << endl;
+		std::cout << "Tempo medio de construção: " << mean_construction/5 << endl;
+		std::cout << "Comparações na construção: " << count_construction << endl;
+		std::cout << "Tempo medio de consulta: " << mean_search/5 << endl;
+		std::cout << "Comparações na consulta: " << count_search << endl;
+		std::cout << "Profundidade: " << depth << endl;
+
+		filecsv  << file_names[i] << "," << mean_construction/5 << "," 
+			<< count_construction << "," << mean_search/5 << "," << count_search 
+			<< "," << depth << "\n";
 	}
-
-    // auto start = high_resolution_clock::now();
-
-	// tree.insert(7);
-	// tree.insert(6);
-	// tree.insert(5);
-	// tree.insert(4);
-	// tree.insert(3);
-	// tree.insert(2);
-	// tree.insert(1);
-
-	// cout << tree.search(1);
-
-	// cout << "Inoder Traversal of Created Tree\n";
-	// tree.inorder();
-
-	// tree.deleteTree();
-
-	// tree.inorder();
-
-	// cout << "\n\nLevel Order Traversal of Created Tree\n";
-	// tree.levelOrder();
-
-    // auto stop = high_resolution_clock::now();
-
-    // auto duration = duration_cast<microseconds>(stop - start);
-
-    // cout << duration.count() << endl;
-    // string myText;
-
-    // ifstream MyReadFile("./Construcao/25000.txt");
-    // while (getline (MyReadFile, myText,' ')) {
-    //     // Output the text from the file
-    //     cout << myText << endl;
-    // }
-
-    // auto vetor = split(myText);
+	filecsv.close();
 
 	return 0;
 }
