@@ -410,7 +410,7 @@ int main()
 			while (getline (file_search, value_string,' ')) {
 				int value = atoi(value_string.c_str());
 
-				tree->search(-1);
+				tree->search(value);
 			}
 			auto stop = high_resolution_clock::now();
 			auto duration = duration_cast<microseconds>(stop - start);

@@ -261,7 +261,7 @@ int main()
 			stop = high_resolution_clock::now();
 			duration = duration_cast<microseconds>(stop - start);
 			mean_search += duration.count();
-            depth = fdepth(1, tree);
+            depth = fdepth(0, tree);
 			deleteTree(tree);
 			file_search.close();
 		}
