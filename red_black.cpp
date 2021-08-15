@@ -40,6 +40,7 @@ protected:
 	void deleteTree(Node *&);
 	bool search(int, Node*&);
 	int depth(int, Node *&);
+	int nodesAfter(int, Node *&);
 public:
 	// Constructor
 	RBTree() { root = NULL; }
@@ -49,6 +50,7 @@ public:
 	void levelOrder();
 	void deleteTree();
 	int depth();
+	int nodesAfter();
 };
 
 // A recursive function to do inorder traversal
@@ -361,6 +363,37 @@ int RBTree::depth()
 		return value_left;
 }
 
+int RBTree::nodesAfter(int value, Node*& node)
+{
+	int value_left, value_right;
+	value_left = value_right = 0;
+	value++;
+	if(node->left != nullptr)
+		value_left = nodesAfter(value, node->left);
+	if(node->right !=nullptr)
+		value_right = nodesAfter(value, node->right);
+
+	if((value-1) > 20)
+		return value_left + value_right + 1;
+	else
+		return value_left + value_right;
+}
+
+int RBTree::nodesAfter()
+{
+	int value, value_left, value_right;
+	value = value_left = value_left = 0;
+	value++;
+	if(root == nullptr)
+		return 0;
+	if(root->left != nullptr)
+		value_left = nodesAfter(value, root->left);
+	if(root->right !=nullptr)
+		value_right = nodesAfter(value, root->right);
+
+	return value_left + value_right;
+}
+
 // Function to do inorder and level order traversals
 void RBTree::inorder()	 { inorderHelper(root);}
 void RBTree::levelOrder() { levelOrderHelper(root); }
@@ -381,6 +414,7 @@ int main()
 		float mean_construction = 0.0;
 		float mean_search = 0.0;
 		int depth = 0;
+		int nodesAfter = 0;
 		for(int j=0; j<5; j++)
 		{
 			count_search = 0;
@@ -390,32 +424,30 @@ int main()
 			string path = "./Construcao/" + file_names[i] + ".txt";
 			string value_string;
 			ifstream file_construction(path);
-			float time = 0.0;
+			auto start = high_resolution_clock::now();
 			while (getline (file_construction, value_string,' ')) {
 				int value = atoi(value_string.c_str());
 
-				auto start = high_resolution_clock::now();
 				tree->insert(value);
-				auto stop = high_resolution_clock::now();
-				auto duration = duration_cast<microseconds>(stop - start);
-				time += duration.count();
 			}
-			mean_construction += time;
+			auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+            mean_construction += duration.count();
 			file_construction.close();
 
 			path = "./Consulta/" + file_names[i] + ".txt";
 			ifstream file_search(path);
-			time = 0.0;
-			auto start = high_resolution_clock::now();
+			start = high_resolution_clock::now();
 			while (getline (file_search, value_string,' ')) {
 				int value = atoi(value_string.c_str());
 
 				tree->search(value);
 			}
-			auto stop = high_resolution_clock::now();
-			auto duration = duration_cast<microseconds>(stop - start);
+			stop = high_resolution_clock::now();
+			duration = duration_cast<microseconds>(stop - start);
 			mean_search += duration.count();
 			depth = tree->depth();
+			nodesAfter = tree->nodesAfter();
 			tree->deleteTree();
 			file_search.close();
 		}
