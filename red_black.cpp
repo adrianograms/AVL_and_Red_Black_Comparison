@@ -304,8 +304,7 @@ bool RBTree::search(int value, Node*& node)
 	}else if(node->data > value and node->left != nullptr) {
 		count_search +=2;
 		return search(value, node->left);
-	}else if(node->data < value and node->right != nullptr){
-		count_search += 3;
+	}else if(node->right != nullptr){
 		return search(value, node->right);
 	}else
 		return false;
@@ -321,8 +320,7 @@ bool RBTree::search(int value)
 	}else if(root->data > value and root->left != nullptr){
 		count_search +=2;
 		return search(value, root->left);
-	}else if(root->data < value and root->right != nullptr){
-		count_search +=3;
+	}else if(root->right != nullptr){
 		return search(value, root->right);
 	}else
 		return false;

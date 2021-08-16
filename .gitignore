@@ -39,3 +39,9 @@
 *.stackdump
 
 /.vscode
+
+avl_2.cpp
+red_black_2.cpp
+
+*.pptx
+*.csv

@@ -191,8 +191,7 @@ bool search(int value, Node* node)
 	}else if(node->key > value and node->left != NULL) {
         count_search += 2;
 		return search(value, node->left);
-    }else if(node->key < value and node->right != NULL){
-        count_search += 3;
+    }else if(node->right != NULL){
 		return search(value, node->right);
     }else
 		return false;
@@ -270,6 +269,7 @@ int main()
 		cout << "Tempo medio de construção: " << mean_construction/5 << endl;
 		cout << "Comparações na construção: " << count_construction << endl;
 		cout << "Tempo medio de consulta: " << mean_search/5 << endl;
+        cout << "Comparações na busca: " << count_search << endl;
         cout << "Profundidade: " << depth << endl;
 
         filecsv  << file_names[i] << "," << mean_construction/5 << "," 
